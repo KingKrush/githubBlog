@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns#">
+
+<head>
+  <meta charset="UTF-8" >
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <title>2Dゲームの当たり判定について(四分木空間分割) | NinjaRoom</title>
+  <meta name="description" content="" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="或る神ゲーの悲運 当たり判定回数の削減 四分木空間分割アルゴリズム   或る神ゲーの悲運ある日あなたは、「スーパーマリオ」に匹敵する2Dアクションゲームのアイデアを思いついた。あなたの頭の中では、その素晴らしいアイデアに基づく、多種多様なオブジェクトが画面内を所狭しと飛び回るダイナミックなゲームシーンがイメージできている。脳細胞が満場一致で「これは間違いなく21世紀を代表するゲームだ!」と絶賛">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2Dゲームの当たり判定について(四分木空間分割)">
+<meta property="og:url" content="http://myroom.ninja/cj4ygnr4p0002si89co4892vs/index.html">
+<meta property="og:site_name" content="NinjaRoom">
+<meta property="og:description" content="或る神ゲーの悲運 当たり判定回数の削減 四分木空間分割アルゴリズム   或る神ゲーの悲運ある日あなたは、「スーパーマリオ」に匹敵する2Dアクションゲームのアイデアを思いついた。あなたの頭の中では、その素晴らしいアイデアに基づく、多種多様なオブジェクトが画面内を所狭しと飛び回るダイナミックなゲームシーンがイメージできている。脳細胞が満場一致で「これは間違いなく21世紀を代表するゲームだ!」と絶賛">
+<meta property="og:updated_time" content="2017-07-07T00:52:42.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="2Dゲームの当たり判定について(四分木空間分割)">
+<meta name="twitter:description" content="或る神ゲーの悲運 当たり判定回数の削減 四分木空間分割アルゴリズム   或る神ゲーの悲運ある日あなたは、「スーパーマリオ」に匹敵する2Dアクションゲームのアイデアを思いついた。あなたの頭の中では、その素晴らしいアイデアに基づく、多種多様なオブジェクトが画面内を所狭しと飛び回るダイナミックなゲームシーンがイメージできている。脳細胞が満場一致で「これは間違いなく21世紀を代表するゲームだ!」と絶賛">
+  <!-- build:css css/screen.css -->
+
+  <link rel="stylesheet" href="/css/screen.css">
+  
+  <!-- endbuild -->
+  
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+  <meta name="generator" content="NinjaRoom">
+  
+  
+  
+</head>
+
+
+<body class="post-template">
+
+  <header class="main-header post-head no-cover" >
+    <nav class="main-nav  clearfix">
+        
+        <a class="back-button icon-arrow-left" href="/">Home</a>
+        <a class="subscribe-button icon-feed" href="/atom.xml">Subscribe</a>
+    </nav>
+    
+    <a class="scroll-down icon-arrow-left" href="#content" data-offset="-45"><span class="hidden">Scroll Down</span></a>
+</header>
+
+  
+
+<main id="content" class="content" role="main">
+  <article class="post" itemprop="blogPost" itemscope="itemscope" itemtype="http://schema.org/BlogPosting">
+    <header class="post-header">
+      <h1 class="post-title" itemprop="name">2Dゲームの当たり判定について(四分木空間分割)</h1>
+      <section class="post-meta">
+  <time datetime="2017-07-05T18:55:39.000Z" itemprop="datePublished" class="post-date">
+      2017-07-06
+  </time>
+  
+</section>
+
+    </header>
+    <section class="post-content" itemprop="description articleBody">
+      
+
+      
+      <section class="post-updated">
+  Last updated on <time datetime="2017-07-07T00:52:42.000Z" itemprop="dateModified">
+      2017-07-07
+  </time>
+</section>
+
+      
+      <!-- toc -->
+<ul>
+<li><a href="#或る神ゲーの悲運">或る神ゲーの悲運</a></li>
+<li><a href="#当たり判定回数の削減">当たり判定回数の削減</a></li>
+<li><a href="#四分木空間分割アルゴリズム">四分木空間分割アルゴリズム</a></li>
+</ul>
+<!-- tocstop -->
+<h2 id="或る神ゲーの悲運"><a href="#或る神ゲーの悲運" class="headerlink" title="或る神ゲーの悲運"></a>或る神ゲーの悲運</h2><p>ある日あなたは、「スーパーマリオ」に匹敵する2Dアクションゲームのアイデアを思いついた。<br>あなたの頭の中では、その素晴らしいアイデアに基づく、多種多様なオブジェクトが画面内を所狭しと飛び回るダイナミックなゲームシーンがイメージできている。脳細胞が満場一致で<em>「これは間違いなく21世紀を代表するゲームだ!」</em>と絶賛する。<br>あなたほどのゲームの遊び手がそれだけの評価をするのだから、これは間違いなく神ゲーである。</p>
+<p>天啓を得たあなたは早速ゲームを作りはじめる。制作は順調に進む。唯一気がかりなのは、ゲーム上に登場するオブジェクトが増えるほど、なんだか画面のかくつきが増えているような気がする点だ。しかしながら、製作中のゲーム画面は想像したゲームシーンと急速に符合しつつあり、完成品が全世界のゲーマーを魅了するのは疑いようがない。</p>
+<p>しかし、制作の後半に差し掛かり、<strong>致命的な問題</strong>が発生する。ゲーム画面上に新たにオブジェクト群を追加した途端、画面のかくつきがPCの故障を疑うほどに顕著になり、ゲームとしての体をなさなくなってしまったのだ。</p>
+<p>調査したところ、かくつきの原因は、毎フレーム毎に行っている当たり判定(衝突判定)の回数が多すぎることだった。しかし、当たり判定の処理がプログラムのあらゆる場所に点在しているため、抜本的な改善のためにはほとんどすべてのプログラムを書き直さなくてはならない。<br>この気の遠くなるような改修を目の当たりにしたあなたは、大いにモチベーションを削がれ、ついにはゲームの完成を諦めてしまった。かくして、21世紀を代表するこのゲームは、あなたの脳内だけの存在になってしまったのである…</p>
+<h2 id="当たり判定回数の削減"><a href="#当たり判定回数の削減" class="headerlink" title="当たり判定回数の削減"></a>当たり判定回数の削減</h2><p>上記のような事態に陥らないためにも、ゲーム制作において当たり判定回数を常に考慮に入れておいて損はありません。大規模なゲーム開発プラットフォームの多くは、この判定回数を最小にする機能が含まれていますが、2つのオブジェクトの当たり判定を行うメソッドしかプラットフォームから提供されていない場合、このメソッドの使用回数を減らす取り組みはゲーム開発者が行わなければなりません。</p>
+<p>なお、この記事では2つのオブジェクトの当たり判定を行うアルゴリズムそのものに関しては焦点を当てません。あくまでも、このアルゴリズムの利用回数を減らす方法を主題とします。</p>
+<p>まずは、簡単な「避けゲー」で当たり判定の回数を考えてみましょう。自機オブジェクトを操作し、画面上の様々な障害物をひたすら避け続けるというゲームです。このゲームでは、当たり判定の回数はそれほど多くなることはなさそうです。障害物オブジェクトと自機オブジェクトの衝突判定を行えばよく、障害物オブジェクトの数が$a$なら当たり判定の回数は$a$回となります。$a$の値がよほど大きくない限り、問題は起こらないでしょう。</p>
+<p>では、前述の避けゲーの自機オブジェクトに弾を発射する機能をつけて、シューティングゲームに作り変えてみましょう。この変更により、新たに自機オブジェクトが発射する弾オブジェクトと障害物オブジェクトの当たり判定を行う必要が出てきます、自機の弾オブジェクトの数を$b$とした場合に、この当たり判定の回数は$ab$回となります。</p>
+<h2 id="四分木空間分割アルゴリズム"><a href="#四分木空間分割アルゴリズム" class="headerlink" title="四分木空間分割アルゴリズム"></a>四分木空間分割アルゴリズム</h2>
+    </section>
+    <footer class="post-footer">
+      <section class="author">
+    <h4>武田ヨーマン</h4>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam justo turpis, tincidunt ac convallis id.</p>
+    
+    <div class="author-meta">
+      <span class="author-location icon-location">Location</span>
+      <span class="author-link icon-link"><a href="Website">Website</a></span>
+    
+      <section>
+        
+          <a href="https://twitter.com/**profile**" class="author-social">twitter</a>
+        
+          <a href="https://plus.google.com/**profile**" class="author-social">google+</a>
+        
+          <a href="https://github.com/**profile**" class="author-social">github</a>
+        
+      </section>
+    </div>
+</section>
+
+      <section class="share">
+    <h4>Share this post</h4>
+    <a class="icon-twitter" href="http://twitter.com/share?url=http://myroom.ninja/cj4ygnr4p0002si89co4892vs/"
+       onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <span class="hidden">Twitter</span>
+    </a>
+    <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://myroom.ninja/cj4ygnr4p0002si89co4892vs/"
+       onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <span class="hidden">Facebook</span>
+    </a>
+    <a class="icon-google-plus" href="https://plus.google.com/share?url=http://myroom.ninja/cj4ygnr4p0002si89co4892vs/"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <span class="hidden">Google+</span>
+    </a>
+</section>
+    </footer>
+  </article>
+  <nav class="pagination" role="pagination">
+  
+  <a class="newer-posts" href="/cj4ygnr4t0004si89nyuddwov/" title="ゲームのフレーム毎の処理工数を削減するための工夫について">
+    ← Newer Post
+  </a>
+  
+  <span class="page-number">•</span>
+  
+</nav>
+
+  
+</div>
+
+</main>
+
+
+  <footer class="site-footer clearfix">
+ <section class="copyright"><a href="/">NinjaRoom</a> &copy; 2015 &bull; All rights reserved.</section>
+ <section class="poweredby">Proudly published with <a class="icon-ghost" href="http://zespia.tw/hexo/"> Hexo</a></section>
+</footer>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/jquery-2.0.3.min.js"><\/script>')</script>
+
+<script type="text/javascript" src="/js/index.js"></script>
+
+
+
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</body>
+</html>
